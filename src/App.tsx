@@ -1,5 +1,5 @@
 import type { ChangeEvent, SyntheticEvent } from "react";
-import { useEffect, useState, /* useMemo */ } from "react";
+import { useEffect, useState,  useMemo  } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { checkLoginAndGetName } from "./utils/AuthUtils";
 import { useAuthenticator } from '@aws-amplify/ui-react';
@@ -56,7 +56,7 @@ import { TextLayer } from "@deck.gl/layers/typed";
 
 const client = generateClient<Schema>();
 
-//type ByCategory = Record<string, { count: number; sum: number }>;
+type ByCategory = Record<string, { count: number; sum: number }>;
 
 
 const theme: Theme = {
@@ -156,7 +156,7 @@ function App() {
   const [showPopup, setShowPopup] = useState<boolean>(true);
   const [checked, setChecked] = useState<boolean>(false);
 
-  //const { totalSum, totalCount, byCategory } = useExpenseAggregates();
+  const { totalSum, totalCount, byCategory } = useExpenseAggregates();
 
   const options: SelectOption[] = [
     { value: 'water', label: 'Water' },
@@ -608,42 +608,42 @@ function App() {
     };
   }
 
-  // function useExpenseAggregates() {
-  //   const [items, setItems] = useState<Array<Schema["Location"]["type"]>>([]);
+  function useExpenseAggregates() {
+    const [items, setItems] = useState<Array<Schema["Location"]["type"]>>([]);
 
-  //   useEffect(() => {
-  //     // Realtime query (updates when data changes)
-  //     const sub = client.models.Location.observeQuery({
-  //       // optional: add filter to limit what you pull down
-  //       // filter: { createdAt: { ge: "2025-12-01T00:00:00.000Z" } },
-  //     }).subscribe({
-  //       next: ({ items }) => setItems(items),
-  //       error: (err) => console.error(err),
-  //     });
+    useEffect(() => {
+      // Realtime query (updates when data changes)
+      const sub = client.models.Location.observeQuery({
+        // optional: add filter to limit what you pull down
+        // filter: { createdAt: { ge: "2025-12-01T00:00:00.000Z" } },
+      }).subscribe({
+        next: ({ items }) => setItems(items),
+        error: (err) => console.error(err),
+      });
 
-  //     return () => sub.unsubscribe();
-  //   }, []);
+      return () => sub.unsubscribe();
+    }, []);
 
-  //   const aggregates = useMemo(() => {
-  //     const byCategory: ByCategory = {};
-  //     let totalSum = 0;
+    const aggregates = useMemo(() => {
+      const byCategory: ByCategory = {};
+      let totalSum = 0;
 
-  //     for (const e of items) {
-  //       const cat = e.track ?? "Uncategorized";
-  //       const amt = Number(e.length ?? 0);
+      for (const e of items) {
+        const cat = e.track ?? "Uncategorized";
+        const amt = Number(e.length ?? 0);
 
-  //       totalSum += amt;
+        totalSum += amt;
 
-  //       if (!byCategory[cat]) byCategory[cat] = { count: 0, sum: 0 };
-  //       byCategory[cat].count += 1;
-  //       byCategory[cat].sum += amt;
-  //     }
+        if (!byCategory[cat]) byCategory[cat] = { count: 0, sum: 0 };
+        byCategory[cat].count += 1;
+        byCategory[cat].sum += amt;
+      }
 
-  //     return { totalSum, byCategory, totalCount: items.length };
-  //   }, [items]);
+      return { totalSum, byCategory, totalCount: items.length };
+    }, [items]);
 
-  //   return aggregates;
-  // }
+    return aggregates;
+  }
 
 
 
@@ -875,23 +875,23 @@ function App() {
               </ScrollView>
             </>)
           },
-          // {
-          //   label: "Statistics",
-          //   value: "3",
-          //   content: (<>
-          //     <div>
-          //       <h2>Total Lenght (ft): {totalSum.toFixed(0)} ({totalCount} items)</h2>
+          {
+            label: "Statistics",
+            value: "3",
+            content: (<>
+              <div>
+                <h2>Total Lenght (ft): {totalSum.toFixed(0)} ({totalCount} items)</h2>
 
-          //       <ul>
-          //         {Object.entries(byCategory).map(([cat, v]) => (
-          //           <li key={cat}>
-          //             {cat}: {v.sum.toFixed(0)} feet ({v.count} counts)
-          //           </li>
-          //         ))}
-          //       </ul>
-          //     </div>
-          //   </>)
-          // },
+                <ul>
+                  {Object.entries(byCategory).map(([cat, v]) => (
+                    <li key={cat}>
+                      {cat}: {v.sum.toFixed(0)} feet ({v.count} counts)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>)
+          },
         ]}
       />
 
