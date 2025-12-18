@@ -97,7 +97,7 @@ type DataT = {
     coordinates: [number, number, number];
   };
   properties: {
-    track: string;
+    track: number;
     type: string;
     status: string;
     date: string;
@@ -147,7 +147,7 @@ function App() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   //const [report, setReport] = useState("");
-  const [track, setTrack] = useState<string>("");
+  const [track, setTrack] = useState<number>(0);
   const [type, setType] = useState<string>("water");
   const [diameter, setDiameter] = useState<number>(0);
   const [length, setLength] = useState<number>(0);
@@ -390,7 +390,7 @@ function App() {
   };
 
   const handleTrack = (e: ChangeEvent<HTMLInputElement>) => {
-    setTrack((e.target.value));
+    setTrack(parseInt(e.target.value));
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -748,7 +748,7 @@ function App() {
       let totalSum = 0;
 
       for (const e of items) {
-        const cat = e.track ?? "Uncategorized";
+        const cat = e.track ?? 0;
         const amt = Number(e.length ?? 0);
 
         totalSum += amt;
@@ -797,7 +797,7 @@ function App() {
         //width="150%"
         />
         <input
-          type="text"
+          type="number"
           value={track}
           placeholder="track"
           onChange={handleTrack}
