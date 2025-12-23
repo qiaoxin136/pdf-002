@@ -25,7 +25,7 @@ const schema = a.schema({
       description: a.string(),
       photos: a.string().array(),
       comments: a.ref('Comment').array(),
-      pdfs:a.string().array()
+      pdfs:a.string()
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });

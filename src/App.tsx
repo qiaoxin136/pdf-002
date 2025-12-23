@@ -113,6 +113,9 @@ type SelectOption = {
   label: string;
 };
 
+// Define the type for the file object
+type FileType = File | null;
+
 const AIR_PORTS =
   "https://xo0b9482z1.execute-api.us-east-1.amazonaws.com/temp/getData";
 
@@ -166,6 +169,8 @@ function App() {
   const [checked, setChecked] = useState<boolean>(false);
 
   const { totalSum, totalCount, byCategory } = useExpenseAggregates();
+
+  const [file, setFile] = useState<FileType>();
 
   const options: SelectOption[] = [
     { value: 'water', label: 'Water' },
@@ -421,6 +426,21 @@ function App() {
     setDescription(e.target.value);
   }
 
+  const handleChange = (event: any) => {
+    setFile(event.target.files?.[0]);
+  };
+
+  const handleClick = () => {
+    if (!file) {
+      return;
+    }
+    uploadData({
+      path: `pdfs/${file.name}`,
+      data: file,
+    });
+    console.log(file);
+  };
+
   useEffect(() => {
 
     client.models.Location.observeQuery().subscribe({
@@ -449,10 +469,9 @@ function App() {
       length: length,
       username: name,
       description: description,
-
-
       lat: lat,
       lng: lng,
+      pdfs:file?.name,
 
     });
     setDate("");
@@ -909,6 +928,8 @@ function App() {
         />
         <Input type="number" value={lat} width="100px" />
         <Input type="number" value={lng} width="100px" />
+        <input type="file" onChange={handleChange} />
+        <Button onClick={handleClick}>Upload</Button>
       </Flex>
       <Divider orientation="horizontal" />
       <br />
