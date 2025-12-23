@@ -466,31 +466,31 @@ function App() {
     setLng(0);
   }
 
-  async function deleteLocation2(id: string, photourls: (string|null)[]) :
-    Promise<{ 
-      response: number 
+  async function deleteLocation2(id: string, photourls: (string | null)[]):
+    Promise<{
+      response: number
       info: string
-  }>{
+    }> {
     console.log('called delete location ')
     console.log("id=", id)
-    console.log("photourl=", photourls )
+    console.log("photourl=", photourls)
 
-    photourls.forEach( 
-            async (aPath) => {
-                if (aPath) 
-                    try{ 
-                       await remove({ path: aPath })
-                    }catch(error) {
-                        console.error('Error deleting photoes:', error);
-                        return {response: 299, info:'failed'}
-                    } 
-            }
+    photourls.forEach(
+      async (aPath) => {
+        if (aPath)
+          try {
+            await remove({ path: aPath })
+          } catch (error) {
+            console.error('Error deleting photoes:', error);
+            return { response: 299, info: 'failed' }
+          }
+      }
     )
 
-    
+
     client.models.Location.delete({ id })
 
-    return {response:200, info:'success'};
+    return { response: 200, info: 'success' };
     /*
     const result = await deleteLocationPhotos(id)
     if (result.response == 200 ) {
@@ -502,10 +502,10 @@ function App() {
 
   async function deleteLocation(id: string) {
     const result = await deleteLocationPhotos(id)
-    console.log( "result =", result.response)
-    if (result.response == 200 ) {
+    console.log("result =", result.response)
+    if (result.response == 200) {
       client.models.Location.delete({ id })
-    }else {
+    } else {
       console.log(" error to delete photos ")
     }
   }
@@ -608,7 +608,7 @@ function App() {
 
   }
 
-   async function handleSubmit(event: SyntheticEvent, id: string) {
+  async function handleSubmit(event: SyntheticEvent, id: string) {
     event.preventDefault();
     //console.log(id);
     //console.log(userName);
@@ -619,22 +619,22 @@ function App() {
       const uploadResult = await uploadPhotos(placePhotos, id)   //Hong
       placePhotosUrls = uploadResult.urls;
 
-      const currentLoc= await client.models.Location.get( {
-         id: id
+      const currentLoc = await client.models.Location.get({
+        id: id
       })
 
-      let revised:string[] = []
-      if ( currentLoc.data?.photos) {
-         currentLoc.data.photos.forEach( 
-           (d)=>{
-              d? revised.push(d):null
-           }
-         )
+      let revised: string[] = []
+      if (currentLoc.data?.photos) {
+        currentLoc.data.photos.forEach(
+          (d) => {
+            d ? revised.push(d) : null
+          }
+        )
       }
 
       await client.models.Location.update({
         id: id,
-        photos: [...placePhotosUrls,...revised]
+        photos: [...placePhotosUrls, ...revised]
 
       })
 
@@ -674,73 +674,73 @@ function App() {
 
   //Hong's addition
 
-  const [searchParms, setSearchParms] = useState<SearchCriteria>({startDate: '', endDate: ''})
- 
-  const getSearchCriteria = ( data:SearchCriteria ) => {
+  const [searchParms, setSearchParms] = useState<SearchCriteria>({ startDate: '', endDate: '' })
 
-      console.log("in Apps data is ", data)
-      setSearchParms(data)
+  const getSearchCriteria = (data: SearchCriteria) => {
+
+    console.log("in Apps data is ", data)
+    setSearchParms(data)
   }
   function previewPhotos(event: CustomEvent) {
-        
-        if (event.target.files) {
-            const eventPhotos = Array.from(event.target.files);
-            //const newFiles: File[] = [...new Set([...eventPhotos, ...placePhotos])]
-            //console.log("newFiles =", newFiles)
-            //setPlacePhotos(newFiles);
-            setPlacePhotos(eventPhotos)
-        }
+
+    if (event.target.files) {
+      const eventPhotos = Array.from(event.target.files);
+      //const newFiles: File[] = [...new Set([...eventPhotos, ...placePhotos])]
+      //console.log("newFiles =", newFiles)
+      //setPlacePhotos(newFiles);
+      setPlacePhotos(eventPhotos)
+    }
   }
 
   function filterLocation() {
 
-      //console.log("searchParams: ", searchParms.startDate, searchParms.endDate)
+    //console.log("searchParams: ", searchParms.startDate, searchParms.endDate)
 
-      if ( searchParms.startDate || searchParms.endDate) {
-        
-        const startDateVal = (searchParms.startDate && searchParms.startDate.trim().length!=0 ? 
-                      searchParms.startDate : null )
-        //console.log(startDateVal)
+    if (searchParms.startDate || searchParms.endDate) {
 
-        const endDateVal = (searchParms.endDate && searchParms.endDate.trim().length!=0 ? 
-                      searchParms.endDate : null )
-        //console.log(endDateVal)
-    
-      
-        let location3:Array<Schema["Location"]["type"]>=new Array<Schema["Location"]["type"]>()
+      const startDateVal = (searchParms.startDate && searchParms.startDate.trim().length != 0 ?
+        searchParms.startDate : null)
+      //console.log(startDateVal)
 
-        if ( startDateVal && endDateVal) {
+      const endDateVal = (searchParms.endDate && searchParms.endDate.trim().length != 0 ?
+        searchParms.endDate : null)
+      //console.log(endDateVal)
 
-          location.forEach( (item) => {
-              if ( item.date && (item.date >= startDateVal) && (item.date <= endDateVal)) {
-                location3.push(item)
-              }
-          })
 
-        }else if (startDateVal) {
-          
-          location.forEach( (item) => {
-              if ( item.date && (item.date >= startDateVal)) {
-                location3.push(item)
-              }
-          })
-            
-        }else if (endDateVal) {
-          location.forEach( (item) => {
-              if ( item.date && (item.date <= endDateVal)) {
-                location3.push(item)
-              }
-          })
-        }else {
-          location3= location;
-        }
-          
-        return location3.sort((a, b) => a.date!.localeCompare(b.date!))
+      let location3: Array<Schema["Location"]["type"]> = new Array<Schema["Location"]["type"]>()
+
+      if (startDateVal && endDateVal) {
+
+        location.forEach((item) => {
+          if (item.date && (item.date >= startDateVal) && (item.date <= endDateVal)) {
+            location3.push(item)
+          }
+        })
+
+      } else if (startDateVal) {
+
+        location.forEach((item) => {
+          if (item.date && (item.date >= startDateVal)) {
+            location3.push(item)
+          }
+        })
+
+      } else if (endDateVal) {
+        location.forEach((item) => {
+          if (item.date && (item.date <= endDateVal)) {
+            location3.push(item)
+          }
+        })
       } else {
-        
-        return location.sort((a, b) => a.date!.localeCompare(b.date!))
+        location3 = location;
       }
-    
+
+      return location3.sort((a, b) => a.date!.localeCompare(b.date!))
+    } else {
+
+      return location.sort((a, b) => a.date!.localeCompare(b.date!))
+    }
+
   }
 
 
@@ -750,48 +750,48 @@ function App() {
     console.log(" render photos is called")
     const rows: any[] = []
 
-        if (location ) {
+    if (location) {
 
-            let location2=filterLocation()
+      let location2 = filterLocation()
 
-            console.log("location2 =", location2)
+      console.log("location2 =", location2)
 
-            location2.forEach ( (loc, index) => {
-              if (loc.photos) {
+      location2.forEach((loc, index) => {
+        if (loc.photos) {
 
-                rows.push(
-                  <h4>Date: {loc.date}  &nbsp; &nbsp;&nbsp; Description: {loc.description} 
-                  </h4>)
-                loc.photos.forEach((photo, idx ) => {
-                  if (photo) {
-                    rows.push(<StorageImage path={photo} 
-                      alt={photo} key={index*1000+idx} height={300} 
-                      style={{marginLeft: '10px'}}/>)
-                  }
-                })
-                 
-              }
-            })
+          rows.push(
+            <h4>Date: {loc.date}  &nbsp; &nbsp;&nbsp; Description: {loc.description}
+            </h4>)
+          loc.photos.forEach((photo, idx) => {
+            if (photo) {
+              rows.push(<StorageImage path={photo}
+                alt={photo} key={index * 1000 + idx} height={300}
+                style={{ marginLeft: '10px' }} />)
+            }
+          })
+
         }
-        return rows;
+      })
     }
+    return rows;
+  }
 
-   async function deleteLocationPhotos( locId: string): Promise<{
-    response: number 
+  async function deleteLocationPhotos(locId: string): Promise<{
+    response: number
     info: string
-    }> {
-         console.log( "Loc Id = " + locId)
-         if (location) {
-            try{ 
-              
-                await remove({ path: `originals/${locId}` })
-            }catch(error) {
-                console.error('Error deleting photoes:', error);
-                return {response: 299, info:'failed'}
-            } 
-          }
-          return {response:200, info:'success'};
+  }> {
+    console.log("Loc Id = " + locId)
+    if (location) {
+      try {
+
+        await remove({ path: `originals/${locId}` })
+      } catch (error) {
+        console.error('Error deleting photoes:', error);
+        return { response: 299, info: 'failed' }
+      }
     }
+    return { response: 200, info: 'success' };
+  }
 
   //end Hong's addition
 
@@ -862,14 +862,14 @@ function App() {
           value={time}
           placeholder="time"
           onChange={handleTime}
-        //width="150%"
+          width="150px"
         />
         <input
           type="number"
           value={track}
           placeholder="track"
           onChange={handleTrack}
-        //width="150%"
+        //width="50px"
         />
         <SelectField
           label="Select an option"
@@ -891,14 +891,14 @@ function App() {
           value={diameter}
           placeholder="diameter (in)"
           onChange={handleDiameter}
-        //width="150%"
+          width="150px"
         />
         <input
           type="number"
           value={length}
           placeholder="length (ft)"
           onChange={handleLength}
-        //width="150%"
+          width="150px"
         />
         <input
           type="text"
@@ -907,8 +907,8 @@ function App() {
           onChange={handleDescription}
         //width="150%"
         />
-        <Input type="number" value={lat} />
-        <Input type="number" value={lng} />
+        <Input type="number" value={lat} width="100px" />
+        <Input type="number" value={lng} width="100px" />
       </Flex>
       <Divider orientation="horizontal" />
       <br />
@@ -966,11 +966,11 @@ function App() {
 
 
                     <label>Place photos:</label><br />
-                    <input type="file" multiple 
-                     onChange={(e) => previewPhotos(e)}
-                     placeholder="new picture"
+                    <input type="file" multiple
+                      onChange={(e) => previewPhotos(e)}
+                      placeholder="new picture"
                     /><br />
-                    
+
                     <Button
                       onClick={(e) => {
                         console.log(clickInfo.properties);
@@ -1047,40 +1047,40 @@ function App() {
                         <TableCell as="th" /* style={{ width: '15%' }} */>Diameter</TableCell>
                         <TableCell as="th" /* style={{ width: '15%' }} */>Length</TableCell>
                         <TableCell as="th" /* style={{ width: '15%' }} */>Images</TableCell>
-                        <TableCell as="th" /* style={{ width: '15%' }} */>Latitude</TableCell>
-                        <TableCell as="th" /* style={{ width: '15%' }} */>Longitude</TableCell>
+                        <TableCell as="th" style={{ width: '50px' }}>Latitude</TableCell>
+                        <TableCell as="th" style={{ width: '50px' }} >Longitude</TableCell>
                       </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {location.map((location) => (
-                          <TableRow
-                            onDoubleClick={(e) =>{
-                                console.log( "location photos url =", location.photos)
-                                console.log(e)
-                                if ( location.photos)
-                                  deleteLocation2(location.id, location.photos)
-                                else 
-                                  deleteLocation(location.id)
-                            } 
+                    </TableHead>
+                    <TableBody>
+                      {location.map((location) => (
+                        <TableRow
+                          onDoubleClick={(e) => {
+                            console.log("location photos url =", location.photos)
+                            console.log(e)
+                            if (location.photos)
+                              deleteLocation2(location.id, location.photos)
+                            else
+                              deleteLocation(location.id)
+                          }
 
 
-                            }
-                            key={location.id}
-                          >
-                            <TableCell /* width="15%" */>{location.date}</TableCell>
-                            <TableCell /* width="15%" */>{location.time}</TableCell>
-                            <TableCell /* width="10%" */>{location.track}</TableCell>
-                            <TableCell /* width="15%" */>{location.type}</TableCell>
-                            <TableCell /* width="15%" */>{location.username}</TableCell>
-                            <TableCell /* width="15%" */>{location.diameter}</TableCell>
-                            <TableCell /* width="15%" */>{location.length}</TableCell>
-                            <TableCell /* width="15%" */>{location.photos? location.photos.length:0}</TableCell>
-                            <TableCell /* width="15%" */>{location.lat}</TableCell>
-                            <TableCell /* width="15%" */>{location.lng}</TableCell>  
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    
+                          }
+                          key={location.id}
+                        >
+                          <TableCell /* width="15%" */>{location.date}</TableCell>
+                          <TableCell /* width="15%" */>{location.time}</TableCell>
+                          <TableCell /* width="10%" */>{location.track}</TableCell>
+                          <TableCell /* width="15%" */>{location.type}</TableCell>
+                          <TableCell /* width="15%" */>{location.username}</TableCell>
+                          <TableCell /* width="15%" */>{location.diameter}</TableCell>
+                          <TableCell /* width="15%" */>{location.length}</TableCell>
+                          <TableCell /* width="15%" */>{location.photos ? location.photos.length : 0}</TableCell>
+                          <TableCell /* width="15%" */>{location.lat}</TableCell>
+                          <TableCell /* width="15%" */>{location.lng}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+
                   </Table>
                 </ThemeProvider>
               </ScrollView>
@@ -1108,7 +1108,7 @@ function App() {
             value: "4",
             content: (<>
               <h3>Photos and Comments</h3>
-              <SearchComponent onGetSearchCriteria={getSearchCriteria}/>
+              <SearchComponent onGetSearchCriteria={getSearchCriteria} />
               {renderPhotos()}
             </>)
           },
