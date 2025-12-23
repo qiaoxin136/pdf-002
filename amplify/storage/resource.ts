@@ -9,5 +9,18 @@ export const imagesStorage = defineStorage({
      
     ],
  
-  })
+  }),
+  
+})
+
+export const pdfsStorage = defineStorage({
+  name: 'pdfs',
+  access: (allow) => ({
+    'pdfs/*': [
+      allow.authenticated.to(['write', 'read', 'delete']),
+     
+    ],
+ 
+  }),
+  isDefault: true
 })
